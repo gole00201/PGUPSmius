@@ -1,12 +1,12 @@
 BUILD 	 = ./build
 TARGET 	 = $(BUILD)/main.hex
-OBJ		 = $(BUILD)/main.o
+OBJ		 = $(patsubst %.c,$(BUILD)/%.o,$(wildcard *.c))
 ELF 	 = $(BUILD)/main.elf
-SRC  	 = main.c
-DEVICE	 = atmega8535
+SRC  	 = $(wildcard *.c)
+DEVICE	 = atmega328p
 CLK 	 = 16000000
 CC		 = avr-gcc
-CC_FLAGS = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(DEVICE) -Wl,-M -Wl,--gc-section>> $(BUILD)/memmap
+CC_FLAGS = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(DEVICE) -Wl,-M -Wl,--gc-section >> $(BUILD)/memmap
 
 all: $(TARGET)
 

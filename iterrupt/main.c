@@ -1,11 +1,10 @@
+#ifndef __AVR_ATmega328P__
+#define __AVR_ATmega328P__ /*Потому что у меня только Arduino UNO*/
+#endif
+
 #include <avr/io.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
 #define PIN 5
-
-void
-init_timer_and_interrupt(){
-}
 
 void
 blink(){
@@ -15,7 +14,6 @@ blink(){
 
 int
 main(void){
-    sei();
     DDRB |= 1 << PIN;
     while (1)
     {
