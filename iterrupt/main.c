@@ -1,18 +1,25 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#define LED_PIN 5
+#include <avr/interrupt.h>
+#define PIN 5
+
+void
+init_timer_and_interrupt(){
+}
 
 void
 blink(){
-    //! Делать что-то
+    PORTB ^= 1 << PIN;
+    _delay_ms(1000);
 }
 
 int
 main(void){
-    DDRB |= 1 << LED_PIN;
-    PORTB |= 1 << LED_PIN;
-    _delay_ms(1000);
-    PORTB &= ~(1 << LED_PIN);
-    blink();
+    sei();
+    DDRB |= 1 << PIN;
+    while (1)
+    {
+        blink();
+    }
     return 0;
 }

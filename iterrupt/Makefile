@@ -1,32 +1,29 @@
-DEVICE	= atmega328p
+BUILD 	 = ./build
+TARGET 	 = $(BUILD)/main.hex
+OBJ		 = $(BUILD)/main.o
+ELF 	 = $(BUILD)/main.elf
+SRC  	 = main.c
+DEVICE	 = atmega8535
+CLK 	 = 16000000
+CC		 = avr-gcc
+CC_FLAGS = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(DEVICE) -Wl,-M -Wl,--gc-section>> $(BUILD)/memmap
 
-CLK 	= 16000000
+all: $(TARGET)
 
-OBJ		= main.o
+$(TARGET): $(ELF)
+	rm -f $(TARGET)
+	avr-objcopy -j .text -j .data -O ihex $(ELF) $(TARGET)
+	avr-objdump -D $(ELF) >> $(BUILD)/asmdump
+	avr-size --format=avr --mcu=$(DEVICE) $(ELF)
 
-CMP		= avr-gcc -Wall -Os -DF_CPU=$(CLK) -mmcu=$(DEVICE)
+$(ELF): $(OBJ)
+	$(CC) $(CC_FLAGS) -o $(ELF) $(OBJ)
 
-all: main.hex
-
-.c.o:
-	$(CMP) -c $< -o $@
-
-.S.o:
-	$(CMP) -x assembler-with-cpp -c $< -o $@
-
-.c.s:
-	$(CMP) -S $< -o $@
+$(OBJ): $(SRC)
+	$(CC) $(CC_FLAGS) -c $< -o $@
 
 flash:
-	avrdude -c arduino -p $(DEVICE) -P /dev/ttyACM0 -U flash:w:main.hex
+	avrdude -c arduino -p $(DEVICE) -P /dev/ttyACM0 -U flash:w:$(TARGET)
 
 clean:
-	rm -f main.hex main.elf $(OBJ)
-
-main.elf: $(OBJ)
-	$(CMP) -o main.elf $(OBJ)
-
-main.hex: main.elf
-	rm -f main.hex
-	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
-	avr-size --format=avr --mcu=$(DEVICE) main.elf
+	rm -f $(TARGET) $(ELF) $(OBJ) $(BUILD)/memmap $(BUILD)/asmdump

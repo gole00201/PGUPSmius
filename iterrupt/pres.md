@@ -28,7 +28,6 @@ int main(void){
 
 ---
 # Как тогда реагировать на внезапные события?
-![](./img/Схема%20гирлянды%202%20режима.jpg)
 
 ---
 
@@ -57,7 +56,7 @@ int main(void){
 
 # Какие регистры рулят всем этим процессом?
 
-## GIMSK
+## GIMSK (EIMSK - старые атмеги)
 Разрешает или запрещает внешние прерывания по входу INT0/INT1
 ```
 бит 7 - INT1;
@@ -76,7 +75,7 @@ int main(void){
 
 ---
 
-## MCUCR (mcu Control Register)
+## MCUCR (mcu Control Register) (EICRA - старые атмеги)
 
 Регистр MCUCR содержит биты управления режимами пониженного энергопотребления MCU и распознаванием сигналов внешних прерываний INT1 и INT0:
 ```
@@ -84,10 +83,10 @@ int main(void){
 бит 6 — SE (Sleep Enable);
 бит 5 — SM1 (Sleep Mode bit 1);
 бит 4 — SM0 (Sleep Mode bit 0);
-бит 3 — ISC11 (Interrupt Sense Control 1 bit 1);
-бит 2 — ISC10 (Interrupt Sense Control 1 bit 0);
-бит 1 — ISC01 (Interrupt Sense Control 0 bit 1);
-бит 0 — ISC00 (Interrupt Sense Control 0 bit 0).
+бит 3 — ISC11 (Interrupt Sense Control 1 bit 1) - по фронту / по  спаду
+бит 2 — ISC10 (Interrupt Sense Control 1 bit 0) - по фронту / по  спаду
+бит 1 — ISC01 (Interrupt Sense Control 0 bit 1) - по фронту / по  спаду
+бит 0 — ISC00 (Interrupt Sense Control 0 bit 0) - по фронту / по  спаду
 ```
 
 ---
@@ -96,16 +95,22 @@ int main(void){
 ## Что писать то?
 
 ```c
-ISR(SIG_INTERRUPT1){ // Что делать в солучае прерывания SIG_INTERRUPT
+ISR(INT0_vect){ // Что делать в случае прерывания INT0_vect
     /*Делам что-то*/
 }
 ```
 ## Но перед этим необходимо это прерывание разрешить!
 ```c
-    sei();  // Все прерывания можно
     GIMSK |= (1<<INT1);  // разрешает или запрещает внешние прерывания по входу INT0/INT1
+    sei();  // Прерывания вообще можно (бит "I" = 1 в SREG)
 
 ```
+
+---
+
+## Задача
+Контроллер считает до 4 секунд. Каждую секунду контроллер должен включить светодиод. Когда пользователь нажмет на клавишу, необходимо сбросить таймер и начать процесс заново. Основной цикл должен быть пустой.
+![bg left width:700px](./img/Схема%20гирлянды%202%20режима.jpg)
 
 ---
 
