@@ -15,8 +15,7 @@ blink(){
 int
 main(void){
     DDRB |= 1 << PIN;
-    while (1)
-    {
+    while (1){
         blink();
     }
     return 0;
